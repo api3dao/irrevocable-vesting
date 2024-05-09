@@ -15,7 +15,7 @@ To act on your vesting, you need to interact with your IrrevocableVesting contra
 - Whenever you are sending transactions to your IrrevocableVesting contract, verify on the interface of your wallet (or hardware wallet if you are using one) that the address to which the transaction is being sent matches your IrrevocableVesting contract address
 
 Initially, your entire allocation will be in your IrrevocableVesting contract.
-If you do not want to stake, you can simply call the `withdrawAsBeneficiary()` function of your IrrevocableVesting contract whenever you want to withdraw the vested portion.
+You can simply call the `withdrawAsBeneficiary()` function of your IrrevocableVesting contract whenever you want to withdraw the vested portion.
 To do that, find your IrrevocableVesting contract on Etherscan, click "Contract", click "Write Contract", click "Connect to Web3", and use Metamask to connect the wallet with `beneficiary` as the address.
 Then, find `withdrawAsBeneficiary()`, click "Write", and send the transaction.
 When the transaction is confirmed, you will receive your vested tokens.
