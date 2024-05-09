@@ -35,9 +35,6 @@ devDependencies:
   '@openzeppelin/contracts':
     specifier: 4.9.6
     version: 4.9.6
-  '@openzeppelin/merkle-tree':
-    specifier: ^1.0.6
-    version: 1.0.6
   '@typechain/ethers-v6':
     specifier: ^0.5.1
     version: 0.5.1(ethers@6.12.1)(typechain@8.3.2)(typescript@5.4.5)
@@ -1259,13 +1256,6 @@ packages:
 
   /@openzeppelin/contracts@4.9.6:
     resolution: {integrity: sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==}
-    dev: true
-
-  /@openzeppelin/merkle-tree@1.0.6:
-    resolution: {integrity: sha512-cGWOb2WBWbJhqvupzxjnKAwGLxxAEYPg51sk76yZ5nVe5D03mw7Vx5yo8llaIEqYhP5O39M8QlrNWclgLfKVrA==}
-    dependencies:
-      '@ethersproject/abi': 5.7.0
-      ethereum-cryptography: 1.2.0
     dev: true
 
   /@pkgjs/parseargs@0.11.0:

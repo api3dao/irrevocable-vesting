@@ -28,7 +28,6 @@
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.6",
     "@openzeppelin/contracts": "4.9.6",
-    "@openzeppelin/merkle-tree": "^1.0.6",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.14",
