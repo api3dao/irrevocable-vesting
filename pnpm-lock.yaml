@@ -32,6 +32,9 @@ devDependencies:
   '@nomicfoundation/hardhat-verify':
     specifier: ^2.0.6
     version: 2.0.6(hardhat@2.22.3)
+  '@openzeppelin/contracts':
+    specifier: 4.9.6
+    version: 4.9.6
   '@openzeppelin/merkle-tree':
     specifier: ^1.0.6
     version: 1.0.6
@@ -1252,6 +1255,10 @@ packages:
       '@nomicfoundation/solidity-analyzer-win32-arm64-msvc': 0.1.1
       '@nomicfoundation/solidity-analyzer-win32-ia32-msvc': 0.1.1
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.1
+    dev: true
+
+  /@openzeppelin/contracts@4.9.6:
+    resolution: {integrity: sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==}
     dev: true
 
   /@openzeppelin/merkle-tree@1.0.6:
@@ -3873,6 +3880,7 @@ packages:
       is-hex-prefixed: 1.0.0
       strip-hex-prefix: 1.0.0
     dev: true
+    bundledDependencies: false
 
   /evp_bytestokey@1.0.3:
     resolution: {integrity: sha512-/f2Go4TognH/KvCISP7OUsHn85hT9nUkxxA9BEWxFn+Oj9o8ZNLm/40hdlgSLyuOimsrTKLUMEorQexp/aPQeA==}
