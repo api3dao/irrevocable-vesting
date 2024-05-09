@@ -64,4 +64,30 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
             amount
         );
     }
+
+    /// @notice Predicts the address of the IrrevocableVesting clone deployed
+    /// by this contract
+    /// @param beneficiary Beneficiary of the vesting
+    /// @param startTimestamp Starting timestamp of the vesting
+    /// @param endTimestamp Ending timestamp of the vesting
+    /// @param amount Amount of tokens to be vested over the period
+    /// @return irrevocableVesting IrrevocableVesting clone address
+    function predictIrrevocableVesting(
+        address beneficiary,
+        uint32 startTimestamp,
+        uint32 endTimestamp,
+        uint192 amount
+    ) external view override returns (address irrevocableVesting) {
+        irrevocableVesting = Clones.predictDeterministicAddress(
+            irrevocableVestingImplementation,
+            keccak256(
+                abi.encodePacked(
+                    beneficiary,
+                    startTimestamp,
+                    endTimestamp,
+                    amount
+                )
+            )
+        );
+    }
 }

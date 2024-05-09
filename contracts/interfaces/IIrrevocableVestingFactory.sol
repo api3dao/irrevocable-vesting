@@ -16,6 +16,13 @@ interface IIrrevocableVestingFactory {
         uint192 amount
     ) external returns (address irrevocableVesting);
 
+    function predictIrrevocableVesting(
+        address beneficiary,
+        uint32 startTimestamp,
+        uint32 endTimestamp,
+        uint192 amount
+    ) external returns (address irrevocableVesting);
+
     function api3Token() external returns (address);
 
     function irrevocableVestingImplementation() external returns (address);

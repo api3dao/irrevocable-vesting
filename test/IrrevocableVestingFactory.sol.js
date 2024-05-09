@@ -325,4 +325,29 @@ describe('IrrevocableVestingFactory', function () {
       });
     });
   });
+
+  describe('predictIrrevocableVesting', function () {
+    it('predicts IrrevocableVesting address', async function () {
+      const { roles, vestingParameters, irrevocableVestingFactory } = await helpers.loadFixture(
+        deployIrrevocableVestingFactory
+      );
+      expect(
+        await irrevocableVestingFactory.predictIrrevocableVesting(
+          roles.beneficiary.address,
+          vestingParameters.startTimestamp,
+          vestingParameters.endTimestamp,
+          vestingParameters.amount
+        )
+      ).to.equal(
+        deriveIrrevocableVestingAddress(
+          await irrevocableVestingFactory.getAddress(),
+          await irrevocableVestingFactory.irrevocableVestingImplementation(),
+          roles.beneficiary.address,
+          vestingParameters.startTimestamp,
+          vestingParameters.endTimestamp,
+          vestingParameters.amount
+        )
+      );
+    });
+  });
 });
