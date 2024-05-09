@@ -46,8 +46,7 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
                     beneficiary,
                     startTimestamp,
                     endTimestamp,
-                    amount,
-                    msg.sender
+                    amount
                 )
             )
         );
@@ -59,7 +58,6 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
             amount
         );
         emit DeployedIrrevocableVesting(
-            msg.sender,
             beneficiary,
             startTimestamp,
             endTimestamp,

@@ -3,7 +3,6 @@ pragma solidity 0.8.17;
 
 interface IIrrevocableVestingFactory {
     event DeployedIrrevocableVesting(
-        address indexed deployer,
         address indexed beneficiary,
         uint32 startTimestamp,
         uint32 endTimestamp,

@@ -91,8 +91,7 @@ describe('IrrevocableVestingFactory', function () {
                         roles.beneficiary.address,
                         vestingParameters.startTimestamp,
                         vestingParameters.endTimestamp,
-                        vestingParameters.amount,
-                        roles.deployer.address
+                        vestingParameters.amount
                       );
 
                       await mockApi3Token
@@ -120,7 +119,6 @@ describe('IrrevocableVestingFactory', function () {
                       )
                         .to.emit(irrevocableVestingFactory, 'DeployedIrrevocableVesting')
                         .withArgs(
-                          roles.deployer.address,
                           roles.beneficiary.address,
                           vestingParameters.startTimestamp,
                           vestingParameters.endTimestamp,
