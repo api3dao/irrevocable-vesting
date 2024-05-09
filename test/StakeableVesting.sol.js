@@ -88,9 +88,8 @@ describe('StakeableVesting', function () {
     context('Api3Token address is not zero', function () {
       context('Api3Pool address is not zero', function () {
         it('constructs uninitializable StakeableVesting', async function () {
-          const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } = await helpers.loadFixture(
-            eoaDeployStakeableVesting
-          );
+          const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } =
+            await helpers.loadFixture(eoaDeployStakeableVesting);
           expect(await stakeableVesting.owner()).to.equal(ethers.constants.AddressZero);
           expect(await stakeableVesting.api3Token()).to.equal(mockApi3Token.address);
           expect(await stakeableVesting.api3Pool()).to.equal(api3Pool.address);
@@ -131,9 +130,8 @@ describe('StakeableVesting', function () {
   describe('initialize', function () {
     context('Owner address is zero', function () {
       it('reverts', async function () {
-        const { roles, vestingParameters, mockApi3Token, api3Pool } = await helpers.loadFixture(
-          eoaDeployStakeableVesting
-        );
+        const { roles, vestingParameters, mockApi3Token, api3Pool } =
+          await helpers.loadFixture(eoaDeployStakeableVesting);
         const BadStakeableVestingFactoryFactory = await ethers.getContractFactory(
           'BadStakeableVestingFactory',
           roles.deployer
@@ -157,9 +155,8 @@ describe('StakeableVesting', function () {
     });
     context('Token balance is not equal to vesting amount', function () {
       it('reverts', async function () {
-        const { roles, vestingParameters, mockApi3Token, api3Pool } = await helpers.loadFixture(
-          eoaDeployStakeableVesting
-        );
+        const { roles, vestingParameters, mockApi3Token, api3Pool } =
+          await helpers.loadFixture(eoaDeployStakeableVesting);
         const BadStakeableVestingFactoryFactory = await ethers.getContractFactory(
           'BadStakeableVestingFactory',
           roles.deployer
@@ -216,9 +213,8 @@ describe('StakeableVesting', function () {
     context('Sender is owner', function () {
       context('Balance is not zero', function () {
         it('withdraws entire balance', async function () {
-          const { roles, vestingParameters, mockApi3Token, stakeableVesting } = await helpers.loadFixture(
-            factoryDeployStakeableVesting
-          );
+          const { roles, vestingParameters, mockApi3Token, stakeableVesting } =
+            await helpers.loadFixture(factoryDeployStakeableVesting);
           const ownerBalanceBeforeWithdrawal = await mockApi3Token.balanceOf(roles.owner.address);
           await expect(stakeableVesting.connect(roles.owner).withdrawAsOwner())
             .to.emit(stakeableVesting, 'WithdrawnAsOwner')
@@ -254,9 +250,8 @@ describe('StakeableVesting', function () {
         context('There are vested tokens in balance', function () {
           context('Vested amount is not smaller than balance', function () {
             it('withdraws entire balance', async function () {
-              const { roles, vestingParameters, mockApi3Token, stakeableVesting } = await helpers.loadFixture(
-                factoryDeployStakeableVesting
-              );
+              const { roles, vestingParameters, mockApi3Token, stakeableVesting } =
+                await helpers.loadFixture(factoryDeployStakeableVesting);
               // Deposit half of the balance to the pool
               await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
               // 3/4 of the vesting time has elapsed
@@ -278,9 +273,8 @@ describe('StakeableVesting', function () {
           });
           context('Vested amount is smaller than balance', function () {
             it('withdraws vested amount', async function () {
-              const { roles, vestingParameters, mockApi3Token, stakeableVesting } = await helpers.loadFixture(
-                factoryDeployStakeableVesting
-              );
+              const { roles, vestingParameters, mockApi3Token, stakeableVesting } =
+                await helpers.loadFixture(factoryDeployStakeableVesting);
               // 3/4 of the vesting time has elapsed
               await helpers.time.setNextBlockTimestamp(
                 vestingParameters.startTimestamp +
@@ -331,9 +325,8 @@ describe('StakeableVesting', function () {
   describe('depositAtPool', function () {
     context('Sender is beneficiary', function () {
       it('approves tokens and deposits', async function () {
-        const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         const stakeableVestingBalanceBeforeDeposit = await mockApi3Token.balanceOf(stakeableVesting.address);
         await expect(
           stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2))
@@ -358,9 +351,8 @@ describe('StakeableVesting', function () {
   describe('withdrawAtPool', function () {
     context('Sender is beneficiary', function () {
       it('withdraws', async function () {
-        const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
         const stakeableVestingBalanceBeforeWithdrawal = await mockApi3Token.balanceOf(stakeableVesting.address);
         await expect(
@@ -386,9 +378,8 @@ describe('StakeableVesting', function () {
   describe('withdrawPrecalculatedAtPool', function () {
     context('Sender is beneficiary', function () {
       it('withdraws precalculated amount', async function () {
-        const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, mockApi3Token, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
         const stakeableVestingBalanceBeforeWithdrawal = await mockApi3Token.balanceOf(stakeableVesting.address);
         // Anyone can call `precalculateUserLocked()` for StakeableVesting
@@ -416,9 +407,8 @@ describe('StakeableVesting', function () {
   describe('stakeAtPool', function () {
     context('Sender is beneficiary', function () {
       it('stakes', async function () {
-        const { roles, vestingParameters, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
         await expect(stakeableVesting.connect(roles.beneficiary).stakeAtPool(vestingParameters.amount.div(2))).to.emit(
           api3Pool,
@@ -440,9 +430,8 @@ describe('StakeableVesting', function () {
   describe('scheduleUnstakeAtPool', function () {
     context('Sender is beneficiary', function () {
       it('schedules unstake', async function () {
-        const { roles, vestingParameters, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
         await stakeableVesting.connect(roles.beneficiary).stakeAtPool(vestingParameters.amount.div(2));
         await expect(
@@ -464,9 +453,8 @@ describe('StakeableVesting', function () {
 
   describe('unstakeAtPool', function () {
     it('unstakes', async function () {
-      const { roles, vestingParameters, api3Pool, stakeableVesting } = await helpers.loadFixture(
-        factoryDeployStakeableVesting
-      );
+      const { roles, vestingParameters, api3Pool, stakeableVesting } =
+        await helpers.loadFixture(factoryDeployStakeableVesting);
       await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
       await stakeableVesting.connect(roles.beneficiary).stakeAtPool(vestingParameters.amount.div(2));
       await stakeableVesting.connect(roles.beneficiary).scheduleUnstakeAtPool(vestingParameters.amount.div(2));
@@ -480,9 +468,8 @@ describe('StakeableVesting', function () {
   describe('delegateAtPool', function () {
     context('Sender is beneficiary', function () {
       it('delegates', async function () {
-        const { roles, vestingParameters, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
         await stakeableVesting.connect(roles.beneficiary).stakeAtPool(vestingParameters.amount.div(2));
         await expect(stakeableVesting.connect(roles.beneficiary).delegateAtPool(roles.randomPerson.address)).to.emit(
@@ -505,9 +492,8 @@ describe('StakeableVesting', function () {
   describe('undelegateAtPool', function () {
     context('Sender is beneficiary', function () {
       it('undelegates', async function () {
-        const { roles, vestingParameters, api3Pool, stakeableVesting } = await helpers.loadFixture(
-          factoryDeployStakeableVesting
-        );
+        const { roles, vestingParameters, api3Pool, stakeableVesting } =
+          await helpers.loadFixture(factoryDeployStakeableVesting);
         await stakeableVesting.connect(roles.beneficiary).depositAtPool(vestingParameters.amount.div(2));
         await stakeableVesting.connect(roles.beneficiary).stakeAtPool(vestingParameters.amount.div(2));
         await stakeableVesting.connect(roles.beneficiary).delegateAtPool(roles.randomPerson.address);
