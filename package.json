@@ -7,7 +7,7 @@
   "scripts": {
     "build": "hardhat compile && tsc -p tsconfig.build.json",
     "deploy": "hardhat deploy --network mainnet",
-    "derive-vesting-address": "hardhat run ./scripts/derive-stakeable-vesting.js --network mainnet",
+    "derive-vesting-address": "hardhat run ./scripts/derive-irrevocable-vesting.js --network mainnet",
     "lint": "pnpm run prettier:check && pnpm run lint:eslint && pnpm run lint:solhint",
     "lint:solhint": "solhint ./contracts/**/*.sol",
     "lint:eslint": "eslint . --ext .js,.ts",
