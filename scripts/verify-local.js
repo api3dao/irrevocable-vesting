@@ -1,18 +1,16 @@
 const { deployments, ethers } = require('hardhat');
-const references = require('../deployments/references.json');
+
+const api3TokenAddress = '0x0b38210ea11411557c13457D4dA7dC6ea731B88a';
 
 async function main() {
   const deployment = await deployments.get('IrrevocableVestingFactory');
   const artifact = await deployments.getArtifact('IrrevocableVestingFactory');
-  const encodedConstructorArguments = ethers.utils.defaultAbiCoder.encode(
-    ['address', 'address'],
-    [references.Api3Token, references.Api3Pool]
-  );
+  const encodedConstructorArguments = ethers.utils.defaultAbiCoder.encode(['address'], [api3TokenAddress]);
   const generatedBytecode = ethers.utils.solidityPack(
     ['bytes', 'bytes'],
     [artifact.bytecode, encodedConstructorArguments]
   );
-  const salt = ethers.constants.HashZero;
+  const salt = ethers.ZeroHash;
   const deterministicDeploymentAddress = ethers.utils.getCreate2Address(
     '0x4e59b44847b379578588920ca78fbf26c0b4956c', // default create2 factory address in hardhat
     salt,
