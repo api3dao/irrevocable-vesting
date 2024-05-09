@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IIrrevocableVesting.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "api3-dao/packages/pool/contracts/interfaces/v0.8/IApi3Pool.sol";
 
 /// @title Contract that implements an irrevocable vesting of API3 tokens
-/// allocated to a beneficiary, which is revocable by the owner of this
-/// contract
+/// allocated to a beneficiary
 /// @notice This contract is an implementation that is required to be cloned by
 /// a IrrevocableVestingFactory contract. The beneficiary of the vesting is
 /// expected to interact with this contract through a generic, ABI-based UI
@@ -18,7 +15,7 @@ import "api3-dao/packages/pool/contracts/interfaces/v0.8/IApi3Pool.sol";
 /// restricted) because the user will not be provided with a trusted frontend
 /// that will encode the calls. This implementation allows general purpose
 /// contract interaction frontends to be used.
-contract IrrevocableVesting is Ownable, IIrrevocableVesting {
+contract IrrevocableVesting is IIrrevocableVesting {
     struct Vesting {
         uint32 startTimestamp;
         uint32 endTimestamp;
@@ -53,8 +50,7 @@ contract IrrevocableVesting is Ownable, IIrrevocableVesting {
 
     /// @dev This contract is means to be an implementation for
     /// IrrevocableVestingFactory to clone. To prevent the implementaion from
-    /// being used, the contract is rendered uninitializable and the ownership
-    /// is renounced.
+    /// being used, the contract is rendered uninitializable.
     /// @param _api3Token Api3Token address
     /// @param _api3Pool Api3Pool address
     constructor(address _api3Token, address _api3Pool) {
@@ -63,7 +59,6 @@ contract IrrevocableVesting is Ownable, IIrrevocableVesting {
         require(_api3Pool != address(0), "Api3Pool address zero");
         api3Pool = _api3Pool;
         beneficiary = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
-        renounceOwnership();
     }
 
     /// @notice Initializes a newly cloned IrrevocableVesting
@@ -73,21 +68,17 @@ contract IrrevocableVesting is Ownable, IIrrevocableVesting {
     /// prevent others from initializing their clones, for example, by
     /// initializing the clone in the same transaction as it is deployed in.
     /// The IrrevocableVesting needs to have exactly `_amount` API3 tokens.
-    /// @param _owner Owner of this IrrevocableVesting clone, i.e., the account
-    /// that can revoke the vesting
     /// @param _beneficiary Beneficiary of the vesting
     /// @param _startTimestamp Starting timestamp of the vesting
     /// @param _endTimestamp Ending timestamp of the vesting
     /// @param _amount Amount of tokens to be vested over the period
     function initialize(
-        address _owner,
         address _beneficiary,
         uint32 _startTimestamp,
         uint32 _endTimestamp,
         uint192 _amount
     ) external override {
         require(beneficiary == address(0), "Already initialized");
-        require(_owner != address(0), "Owner address zero");
         require(_beneficiary != address(0), "Beneficiary address zero");
         require(_startTimestamp != 0, "Start timestamp zero");
         require(_endTimestamp > _startTimestamp, "End not later than start");
@@ -102,7 +93,6 @@ contract IrrevocableVesting is Ownable, IIrrevocableVesting {
             IERC20(api3Token).balanceOf(address(this)) == _amount,
             "Balance is not vesting amount"
         );
-        _transferOwnership(_owner);
         beneficiary = _beneficiary;
         vesting = Vesting({
             startTimestamp: _startTimestamp,
@@ -111,145 +101,22 @@ contract IrrevocableVesting is Ownable, IIrrevocableVesting {
         });
     }
 
-    /// @notice Called by the owner to set the beneficiary
-    /// @dev This can be used to revoke the vesting by setting the beneficiary
-    /// to be the owner, or to update the beneficiary address, e.g., because
-    /// the previous beneficiary account was compromised
-    /// @param _beneficiary Beneficiary of the vesting
-    function setBeneficiary(address _beneficiary) external override onlyOwner {
-        require(_beneficiary != address(0), "Beneficiary address zero");
-        beneficiary = _beneficiary;
-        emit SetBeneficiary(_beneficiary);
-    }
-
-    /// @notice Called by the owner to withdraw all API3 tokens
-    /// @dev This function does not modify the state on purpose, so that the
-    /// vesting can easily be reinstituted by returning the withdrawn amount
-    function withdrawAsOwner() external override onlyOwner {
-        uint256 withdrawalAmount = IERC20(api3Token).balanceOf(address(this));
-        require(withdrawalAmount != 0, "No balance to withdraw");
-        IERC20(api3Token).transfer(msg.sender, withdrawalAmount);
-        emit WithdrawnAsOwner(withdrawalAmount);
-    }
-
     /// @notice Called by the beneficiary as many tokens the vesting schedule
     /// allows
     function withdrawAsBeneficiary() external override onlyBeneficiary {
         uint256 balance = IERC20(api3Token).balanceOf(address(this));
         require(balance != 0, "Balance zero");
-        uint256 totalBalance = balance + poolBalance();
-        uint256 unvestedAmountInTotalBalance = unvestedAmount();
+        uint256 unvestedAmountInBalance = unvestedAmount();
         require(
-            totalBalance > unvestedAmountInTotalBalance,
+            balance > unvestedAmountInBalance,
             "Tokens in balance not vested yet"
         );
-        uint256 vestedAmountInTotalBalance = totalBalance -
-            unvestedAmountInTotalBalance;
+        uint256 vestedAmountInTotalBalance = balance - unvestedAmountInBalance;
         uint256 withdrawalAmount = vestedAmountInTotalBalance > balance
             ? balance
             : vestedAmountInTotalBalance;
         IERC20(api3Token).transfer(msg.sender, withdrawalAmount);
         emit WithdrawnAsBeneficiary(withdrawalAmount);
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting deposit
-    /// tokens at the pool
-    /// @param amount Amount of tokens
-    function depositAtPool(uint256 amount) external override onlyBeneficiary {
-        IERC20(api3Token).approve(api3Pool, amount);
-        IApi3Pool(api3Pool).depositRegular(amount);
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting withdraw
-    /// tokens from the pool
-    /// @param amount Amount of tokens
-    function withdrawAtPool(uint256 amount) external override onlyBeneficiary {
-        IApi3Pool(api3Pool).withdrawRegular(amount);
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting withdraw
-    /// tokens from the pool based on the precalculated amount of locked
-    /// staking rewards
-    /// @dev This is only needed if the gas cost of calculating the amount of
-    /// locked staking rewards exceeds the block gas limit. See the Api3Pool
-    /// code for more details.
-    /// `precalculateUserLocked()` at Api3Pool needs to be called before using
-    /// this function. Since anyone can call it for any user address, it is not
-    /// included in this contract.
-    /// @param amount Amount of tokens
-    function withdrawPrecalculatedAtPool(
-        uint256 amount
-    ) external override onlyBeneficiary {
-        IApi3Pool(api3Pool).withdrawPrecalculated(amount);
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting stake
-    /// tokens at the pool
-    /// @param amount Amount of tokens
-    function stakeAtPool(uint256 amount) external override onlyBeneficiary {
-        IApi3Pool(api3Pool).stake(amount);
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting schedule
-    /// an unstaking of tokens at the pool
-    /// @param amount Amount of tokens
-    function scheduleUnstakeAtPool(
-        uint256 amount
-    ) external override onlyBeneficiary {
-        IApi3Pool(api3Pool).scheduleUnstake(amount);
-    }
-
-    /// @notice Called by the beneficiary to have the unstaking that the
-    /// IrrevocableVesting has scheduled to be executed
-    /// @dev Anyone can call this function at Api3Pool with the
-    /// IrrevocableVesting address. This function is implemented for the
-    /// convenience of the user.
-    function unstakeAtPool() external override {
-        IApi3Pool(api3Pool).unstake(address(this));
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting delegate
-    /// its voting power at the pool
-    /// @param delegate Address of the account that the voting power will be
-    /// delegated to
-    function delegateAtPool(
-        address delegate
-    ) external override onlyBeneficiary {
-        IApi3Pool(api3Pool).delegateVotingPower(delegate);
-    }
-
-    /// @notice Called by the beneficiary to have the IrrevocableVesting
-    /// undelegate its voting power at the pool
-    function undelegateAtPool() external override onlyBeneficiary {
-        IApi3Pool(api3Pool).undelegateVotingPower();
-    }
-
-    function stateAtPool()
-        external
-        view
-        override
-        returns (
-            uint256 unstaked,
-            uint256 staked,
-            uint256 unstaking,
-            uint256 unstakeScheduledFor,
-            uint256 lockedStakingRewards,
-            address delegate,
-            uint256 lastDelegationUpdateTimestamp
-        )
-    {
-        delegate = IApi3Pool(api3Pool).userDelegate(address(this));
-        lockedStakingRewards = IApi3Pool(api3Pool).userLocked(address(this));
-        staked = IApi3Pool(api3Pool).userStake(address(this));
-        (
-            unstaked,
-            ,
-            unstaking,
-            ,
-            unstakeScheduledFor,
-            lastDelegationUpdateTimestamp,
-
-        ) = IApi3Pool(api3Pool).getUser(address(this));
     }
 
     /// @notice Returns the amount of tokens that are yet to be vested based on
@@ -270,18 +137,5 @@ contract IrrevocableVesting is Ownable, IIrrevocableVesting {
             uint256 totalTime = endTimestamp - startTimestamp;
             return amount - (amount * passedTime) / totalTime;
         }
-    }
-
-    /// @notice Returns the total balance of IrrevocableVesting at the pool
-    /// @dev Even though it is not certain that the beneficiary will be able to
-    /// unstake the funds that are currently staked or being unstaked without
-    /// getting slashed, the contract still counts them towards their total
-    /// balance in favor of the beneficiary
-    /// @return Pool balance
-    function poolBalance() private view returns (uint256) {
-        uint256 staked = IApi3Pool(api3Pool).userStake(address(this));
-        (uint256 unstaked, , uint256 unstaking, , , , ) = IApi3Pool(api3Pool)
-            .getUser(address(this));
-        return staked + unstaked + unstaking;
     }
 }

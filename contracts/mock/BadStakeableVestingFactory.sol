@@ -17,23 +17,6 @@ contract BadIrrevocableVestingFactory {
         );
     }
 
-    function deployIrrevocableVestingWithZeroOwner(
-        address beneficiary,
-        uint32 startTimestamp,
-        uint32 endTimestamp,
-        uint192 amount
-    ) external returns (address irrevocableVesting) {
-        irrevocableVesting = Clones.clone(irrevocableVestingImplementation);
-        IERC20(api3Token).transferFrom(msg.sender, irrevocableVesting, amount);
-        IIrrevocableVesting(irrevocableVesting).initialize(
-            address(0),
-            beneficiary,
-            startTimestamp,
-            endTimestamp,
-            amount
-        );
-    }
-
     function deployIrrevocableVestingWithoutTransferringTokens(
         address beneficiary,
         uint32 startTimestamp,
@@ -42,7 +25,6 @@ contract BadIrrevocableVestingFactory {
     ) external returns (address irrevocableVesting) {
         irrevocableVesting = Clones.clone(irrevocableVestingImplementation);
         IIrrevocableVesting(irrevocableVesting).initialize(
-            msg.sender,
             beneficiary,
             startTimestamp,
             endTimestamp,

@@ -29,8 +29,6 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
     /// amount to it from the sender
     /// @dev The sender needs to approve `amount` API3 tokens to this contract
     /// before calling this.
-    /// The sender will be the owner of the IrrevocableVesting clone, allowing it
-    /// to revoke the vesting.
     /// @param beneficiary Beneficiary of the vesting
     /// @param startTimestamp Starting timestamp of the vesting
     /// @param endTimestamp Ending timestamp of the vesting
@@ -56,7 +54,6 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
         );
         IERC20(api3Token).transferFrom(msg.sender, irrevocableVesting, amount);
         IIrrevocableVesting(irrevocableVesting).initialize(
-            msg.sender,
             beneficiary,
             startTimestamp,
             endTimestamp,
