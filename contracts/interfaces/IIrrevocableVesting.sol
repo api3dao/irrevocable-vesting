@@ -2,8 +2,6 @@
 pragma solidity 0.8.17;
 
 interface IIrrevocableVesting {
-    event SetBeneficiary(address beneficiary);
-
     event WithdrawnAsBeneficiary(uint256 amount);
 
     function initialize(
