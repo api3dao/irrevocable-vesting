@@ -2,19 +2,19 @@ const hre = require('hardhat');
 const references = require('../deployments/references.json');
 
 module.exports = async ({ deployments }) => {
-  const StakeableVestingFactory = await deployments.get('StakeableVestingFactory');
+  const IrrevocableVestingFactory = await deployments.get('IrrevocableVestingFactory');
   await hre.run('verify:verify', {
-    address: StakeableVestingFactory.address,
+    address: IrrevocableVestingFactory.address,
     constructorArguments: [references.Api3Token, references.Api3Pool],
   });
-  const stakeableVestingFactory = new hre.ethers.Contract(
-    StakeableVestingFactory.address,
-    StakeableVestingFactory.abi,
+  const irrevocableVestingFactory = new hre.ethers.Contract(
+    IrrevocableVestingFactory.address,
+    IrrevocableVestingFactory.abi,
     hre.ethers.provider
   );
-  const stakeableVestingImplementationAddress = await stakeableVestingFactory.stakeableVestingImplementation();
+  const irrevocableVestingImplementationAddress = await irrevocableVestingFactory.irrevocableVestingImplementation();
   await hre.run('verify:verify', {
-    address: stakeableVestingImplementationAddress,
+    address: irrevocableVestingImplementationAddress,
     constructorArguments: [references.Api3Token, references.Api3Pool],
   });
 };

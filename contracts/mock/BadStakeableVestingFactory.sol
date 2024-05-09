@@ -1,31 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "../StakeableVesting.sol";
+import "../IrrevocableVesting.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract BadStakeableVestingFactory {
+contract BadIrrevocableVestingFactory {
     address public immutable api3Token;
 
-    address public immutable stakeableVestingImplementation;
+    address public immutable irrevocableVestingImplementation;
 
     constructor(address _api3Token, address _api3Pool) {
         api3Token = _api3Token;
-        stakeableVestingImplementation = address(
-            new StakeableVesting(_api3Token, _api3Pool)
+        irrevocableVestingImplementation = address(
+            new IrrevocableVesting(_api3Token, _api3Pool)
         );
     }
 
-    function deployStakeableVestingWithZeroOwner(
+    function deployIrrevocableVestingWithZeroOwner(
         address beneficiary,
         uint32 startTimestamp,
         uint32 endTimestamp,
         uint192 amount
-    ) external returns (address stakeableVesting) {
-        stakeableVesting = Clones.clone(stakeableVestingImplementation);
-        IERC20(api3Token).transferFrom(msg.sender, stakeableVesting, amount);
-        IStakeableVesting(stakeableVesting).initialize(
+    ) external returns (address irrevocableVesting) {
+        irrevocableVesting = Clones.clone(irrevocableVestingImplementation);
+        IERC20(api3Token).transferFrom(msg.sender, irrevocableVesting, amount);
+        IIrrevocableVesting(irrevocableVesting).initialize(
             address(0),
             beneficiary,
             startTimestamp,
@@ -34,14 +34,14 @@ contract BadStakeableVestingFactory {
         );
     }
 
-    function deployStakeableVestingWithoutTransferringTokens(
+    function deployIrrevocableVestingWithoutTransferringTokens(
         address beneficiary,
         uint32 startTimestamp,
         uint32 endTimestamp,
         uint192 amount
-    ) external returns (address stakeableVesting) {
-        stakeableVesting = Clones.clone(stakeableVestingImplementation);
-        IStakeableVesting(stakeableVesting).initialize(
+    ) external returns (address irrevocableVesting) {
+        irrevocableVesting = Clones.clone(irrevocableVestingImplementation);
+        IIrrevocableVesting(irrevocableVesting).initialize(
             msg.sender,
             beneficiary,
             startTimestamp,

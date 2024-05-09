@@ -5,12 +5,12 @@ module.exports = async ({ getUnnamedAccounts, deployments }) => {
   const { deploy, log } = deployments;
   const accounts = await getUnnamedAccounts();
 
-  const stakeableVestingFactory = await deploy('StakeableVestingFactory', {
+  const irrevocableVestingFactory = await deploy('IrrevocableVestingFactory', {
     from: accounts[0],
     args: [references.Api3Token, references.Api3Pool],
     log: true,
     deterministicDeployment: hre.ethers.constants.HashZero,
   });
-  log(`Deployed StakeableVestingFactory at ${stakeableVestingFactory.address}`);
+  log(`Deployed IrrevocableVestingFactory at ${irrevocableVestingFactory.address}`);
 };
 module.exports.tags = ['deploy'];
