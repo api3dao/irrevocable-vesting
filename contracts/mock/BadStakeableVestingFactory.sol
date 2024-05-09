@@ -10,10 +10,10 @@ contract BadIrrevocableVestingFactory {
 
     address public immutable irrevocableVestingImplementation;
 
-    constructor(address _api3Token, address _api3Pool) {
+    constructor(address _api3Token) {
         api3Token = _api3Token;
         irrevocableVestingImplementation = address(
-            new IrrevocableVesting(_api3Token, _api3Pool)
+            new IrrevocableVesting(_api3Token)
         );
     }
 

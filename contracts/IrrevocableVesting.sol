@@ -10,11 +10,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 /// a IrrevocableVestingFactory contract. The beneficiary of the vesting is
 /// expected to interact with this contract through a generic, ABI-based UI
 /// such as Etherscan's. See the repo's README for instructions.
-/// @dev The contract implements the Api3Pool interface explicitly instead of
-/// acting as a general call forwarder (with only Api3Token interactions being
-/// restricted) because the user will not be provided with a trusted frontend
-/// that will encode the calls. This implementation allows general purpose
-/// contract interaction frontends to be used.
 contract IrrevocableVesting is IIrrevocableVesting {
     struct Vesting {
         uint32 startTimestamp;
@@ -24,9 +19,6 @@ contract IrrevocableVesting is IIrrevocableVesting {
 
     /// @notice Api3Token address
     address public immutable override api3Token;
-
-    /// @notice Api3Pool address
-    address public immutable api3Pool;
 
     /// @notice Beneficiary of the vesting
     address public override beneficiary;
@@ -49,23 +41,20 @@ contract IrrevocableVesting is IIrrevocableVesting {
     }
 
     /// @dev This contract is means to be an implementation for
-    /// IrrevocableVestingFactory to clone. To prevent the implementaion from
+    /// IrrevocableVestingFactory to clone. To prevent the implementation from
     /// being used, the contract is rendered uninitializable.
     /// @param _api3Token Api3Token address
-    /// @param _api3Pool Api3Pool address
-    constructor(address _api3Token, address _api3Pool) {
+    constructor(address _api3Token) {
         require(_api3Token != address(0), "Api3Token address zero");
         api3Token = _api3Token;
-        require(_api3Pool != address(0), "Api3Pool address zero");
-        api3Pool = _api3Pool;
         beneficiary = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
     }
 
     /// @notice Initializes a newly cloned IrrevocableVesting
     /// @dev Since beneficiary is required to be zero address, only clones of
     /// this contract can be initialized.
-    /// Anyone can initialize a IrrevocableVesting clone. The user is required to
-    /// prevent others from initializing their clones, for example, by
+    /// Anyone can initialize a IrrevocableVesting clone. The user is required
+    /// to prevent others from initializing their clones, for example, by
     /// initializing the clone in the same transaction as it is deployed in.
     /// The IrrevocableVesting needs to have exactly `_amount` API3 tokens.
     /// @param _beneficiary Beneficiary of the vesting
@@ -111,10 +100,7 @@ contract IrrevocableVesting is IIrrevocableVesting {
             balance > unvestedAmountInBalance,
             "Tokens in balance not vested yet"
         );
-        uint256 vestedAmountInTotalBalance = balance - unvestedAmountInBalance;
-        uint256 withdrawalAmount = vestedAmountInTotalBalance > balance
-            ? balance
-            : vestedAmountInTotalBalance;
+        uint256 withdrawalAmount = balance - unvestedAmountInBalance;
         IERC20(api3Token).transfer(msg.sender, withdrawalAmount);
         emit WithdrawnAsBeneficiary(withdrawalAmount);
     }

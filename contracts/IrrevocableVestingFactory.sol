@@ -16,16 +16,15 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
     address public immutable override irrevocableVestingImplementation;
 
     /// @param _api3Token Api3Token address
-    /// @param _api3Pool Api3Pool address
-    constructor(address _api3Token, address _api3Pool) {
+    constructor(address _api3Token) {
         require(_api3Token != address(0), "Api3Token address zero");
         api3Token = _api3Token;
         irrevocableVestingImplementation = address(
-            new IrrevocableVesting(_api3Token, _api3Pool)
+            new IrrevocableVesting(_api3Token)
         );
     }
 
-    /// @notice Deploys a IrrevocableVesting clone and transfers the vesting
+    /// @notice Deploys an IrrevocableVesting clone and transfers the vesting
     /// amount to it from the sender
     /// @dev The sender needs to approve `amount` API3 tokens to this contract
     /// before calling this.
