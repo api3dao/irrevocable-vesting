@@ -5,7 +5,7 @@ interface IIrrevocableVesting {
     event WithdrawnAsBeneficiary(uint256 amount);
 
     function initialize(
-        address _beneficiary,
+        address beneficiary_,
         uint32 startTimestamp,
         uint32 endTimestamp,
         uint192 amount
