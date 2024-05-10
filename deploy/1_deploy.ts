@@ -8,12 +8,6 @@ import {
   type ERC20,
 } from '../src/index';
 
-export const exampleVesting = {
-  startTimestamp: 1,
-  endTimestamp: 2,
-  amount: 1,
-};
-
 module.exports = async () => {
   const { deploy, log } = deployments;
   const [deployer] = await ethers.getSigners();
@@ -33,6 +27,12 @@ module.exports = async () => {
     irrevocableVestingFactoryAbi,
     deployer
   ) as unknown as IrrevocableVestingFactory;
+
+  const exampleVesting = {
+    startTimestamp: 1,
+    endTimestamp: 2,
+    amount: 1,
+  };
 
   const exampleIrrevocableVestingAddress = deriveIrrevocableVestingAddress(
     irrevocableVestingFactoryAddress,
