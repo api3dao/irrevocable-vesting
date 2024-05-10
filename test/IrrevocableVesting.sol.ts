@@ -1,12 +1,9 @@
-const { ethers, artifacts } = require('hardhat');
-const helpers = require('@nomicfoundation/hardhat-network-helpers');
-const { expect } = require('chai');
+import type { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers';
+import * as helpers from '@nomicfoundation/hardhat-network-helpers';
+import { expect } from 'chai';
+import { artifacts, ethers } from 'hardhat';
 
-module.exports = {
-  getVestingParameters,
-};
-
-function getVestingParameters() {
+export function getVestingParameters() {
   const timestampNow = Math.floor(Date.now() / 1000);
   const timestampOneWeekFromNow = timestampNow + 7 * 24 * 60 * 60;
   const timestampOneWeekAndFourYearsFromNow = timestampOneWeekFromNow + 4 * 365 * 24 * 60 * 60;
@@ -19,12 +16,11 @@ function getVestingParameters() {
 
 describe('IrrevocableVesting', function () {
   async function eoaDeployIrrevocableVesting() {
+    const roleNames = ['deployer', 'beneficiary', 'randomPerson'];
     const accounts = await ethers.getSigners();
-    const roles = {
-      deployer: accounts[0],
-      beneficiary: accounts[1],
-      randomPerson: accounts[9],
-    };
+    const roles: Record<string, HardhatEthersSigner> = roleNames.reduce((acc, roleName, index) => {
+      return { ...acc, [roleName]: accounts[index] };
+    }, {});
     const vestingParameters = getVestingParameters();
     const MockApi3TokenFactory = await ethers.getContractFactory('MockApi3Token', roles.deployer);
     const mockApi3Token = await MockApi3TokenFactory.deploy();
@@ -54,7 +50,7 @@ describe('IrrevocableVesting', function () {
     const irrevocableVestingAddress = await irrevocableVestingFactory
       .connect(roles.deployer)
       .deployIrrevocableVesting.staticCall(
-        roles.beneficiary.address,
+        roles.beneficiary!.address,
         vestingParameters.startTimestamp,
         vestingParameters.endTimestamp,
         vestingParameters.amount
@@ -62,7 +58,7 @@ describe('IrrevocableVesting', function () {
     await irrevocableVestingFactory
       .connect(roles.deployer)
       .deployIrrevocableVesting(
-        roles.beneficiary.address,
+        roles.beneficiary!.address,
         vestingParameters.startTimestamp,
         vestingParameters.endTimestamp,
         vestingParameters.amount
@@ -81,7 +77,7 @@ describe('IrrevocableVesting', function () {
         expect(await irrevocableVesting.beneficiary()).to.equal('0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF');
         await expect(
           irrevocableVesting.initialize(
-            roles.beneficiary.address,
+            roles.beneficiary!.address,
             vestingParameters.startTimestamp,
             vestingParameters.endTimestamp,
             vestingParameters.amount
@@ -114,7 +110,7 @@ describe('IrrevocableVesting', function () {
           badIrrevocableVestingFactory
             .connect(roles.deployer)
             .deployIrrevocableVestingWithoutTransferringTokens(
-              roles.beneficiary.address,
+              roles.beneficiary!.address,
               vestingParameters.startTimestamp,
               vestingParameters.endTimestamp,
               vestingParameters.amount
@@ -138,11 +134,11 @@ describe('IrrevocableVesting', function () {
                 0.75 * (vestingParameters.endTimestamp - vestingParameters.startTimestamp)
             );
             // Beneficiary should receive 3/4 of the balance
-            const beneficiaryBalanceBeforeWithdrawal = await mockApi3Token.balanceOf(roles.beneficiary.address);
-            await expect(irrevocableVesting.connect(roles.beneficiary).withdrawAsBeneficiary())
+            const beneficiaryBalanceBeforeWithdrawal = await mockApi3Token.balanceOf(roles.beneficiary!.address);
+            await expect((irrevocableVesting as any).connect(roles.beneficiary!).withdrawAsBeneficiary())
               .to.emit(irrevocableVesting, 'WithdrawnAsBeneficiary')
               .withArgs((vestingParameters.amount * 3n) / 4n);
-            const beneficiaryBalanceAfterWithdrawal = await mockApi3Token.balanceOf(roles.beneficiary.address);
+            const beneficiaryBalanceAfterWithdrawal = await mockApi3Token.balanceOf(roles.beneficiary!.address);
             expect(beneficiaryBalanceAfterWithdrawal - beneficiaryBalanceBeforeWithdrawal).to.equal(
               (vestingParameters.amount * 3n) / 4n
             );
@@ -154,9 +150,9 @@ describe('IrrevocableVesting', function () {
         context('There are no vested tokens in balance', function () {
           it('reverts', async function () {
             const { roles, irrevocableVesting } = await helpers.loadFixture(factoryDeployIrrevocableVesting);
-            await expect(irrevocableVesting.connect(roles.beneficiary).withdrawAsBeneficiary()).to.be.revertedWith(
-              'Tokens in balance not vested yet'
-            );
+            await expect(
+              (irrevocableVesting as any).connect(roles.beneficiary!).withdrawAsBeneficiary()
+            ).to.be.revertedWith('Tokens in balance not vested yet');
           });
         });
       });
@@ -166,10 +162,10 @@ describe('IrrevocableVesting', function () {
             factoryDeployIrrevocableVesting
           );
           await helpers.time.setNextBlockTimestamp(vestingParameters.endTimestamp);
-          await irrevocableVesting.connect(roles.beneficiary).withdrawAsBeneficiary();
-          await expect(irrevocableVesting.connect(roles.beneficiary).withdrawAsBeneficiary()).to.be.revertedWith(
-            'Balance zero'
-          );
+          await (irrevocableVesting as any).connect(roles.beneficiary!).withdrawAsBeneficiary();
+          await expect(
+            (irrevocableVesting as any).connect(roles.beneficiary!).withdrawAsBeneficiary()
+          ).to.be.revertedWith('Balance zero');
         });
       });
     });
@@ -187,14 +183,14 @@ describe('IrrevocableVesting', function () {
     context('Called before vesting start', function () {
       it('returns vesting amount', async function () {
         const { vestingParameters, irrevocableVesting } = await helpers.loadFixture(factoryDeployIrrevocableVesting);
-        expect(await irrevocableVesting.unvestedAmount()).to.equal(vestingParameters.amount);
+        expect(await (irrevocableVesting as any).unvestedAmount()).to.equal(vestingParameters.amount);
       });
     });
     context('Called after vesting end', function () {
       it('returns zero', async function () {
         const { vestingParameters, irrevocableVesting } = await helpers.loadFixture(factoryDeployIrrevocableVesting);
         await helpers.time.increaseTo(vestingParameters.endTimestamp);
-        expect(await irrevocableVesting.unvestedAmount()).to.equal(0);
+        expect(await (irrevocableVesting as any).unvestedAmount()).to.equal(0);
       });
     });
     context('Called during vesting', function () {
@@ -203,7 +199,7 @@ describe('IrrevocableVesting', function () {
         await helpers.time.increaseTo(
           vestingParameters.startTimestamp + 0.75 * (vestingParameters.endTimestamp - vestingParameters.startTimestamp)
         );
-        expect(await irrevocableVesting.unvestedAmount()).to.equal(vestingParameters.amount / 4n);
+        expect(await (irrevocableVesting as any).unvestedAmount()).to.equal(vestingParameters.amount / 4n);
       });
     });
   });
