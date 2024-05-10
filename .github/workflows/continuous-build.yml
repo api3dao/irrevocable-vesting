@@ -12,7 +12,7 @@ jobs:
   lint-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone @api3/contracts
+      - name: Clone repo
         uses: actions/checkout@v4
 
       - name: Set up pnpm
@@ -38,7 +38,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone @api3/contracts
+      - name: Clone repo
         uses: actions/checkout@v4
 
       - name: Set up pnpm
@@ -61,7 +61,7 @@ jobs:
   validate-verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone @api3/contracts
+      - name: Clone repo
         uses: actions/checkout@v4
       
       - name: Set up pnpm
