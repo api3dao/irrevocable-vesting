@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "build": "hardhat compile && tsc -p tsconfig.build.json",
-    "deploy": "hardhat deploy --network mainnet",
-    "print-irrevocable-vesting-address": "hardhat run ./scripts/print-irrevocable-vesting-address.ts --network mainnet",
+    "deploy:deterministic": "hardhat deploy --network ethereum",
+    "print-irrevocable-vesting-address": "hardhat run ./scripts/print-irrevocable-vesting-address.ts --network ethereum",
     "lint": "pnpm run prettier:check && pnpm run lint:eslint && pnpm run lint:solhint",
     "lint:solhint": "solhint ./contracts/**/*.sol",
     "lint:eslint": "eslint . --ext .js,.ts",
