@@ -5,12 +5,15 @@ export const api3TokenAddress = '0x0b38210ea11411557c13457D4dA7dC6ea731B88a';
 
 export function deriveIrrevocableVestingAddress(
   irrevocableVestingFactoryAddress: AddressLike,
-  irrevocableVestingImplementationAddress: AddressLike,
   beneficiaryAddress: AddressLike,
   startTimestamp: BigNumberish,
   endTimestamp: BigNumberish,
   amount: BigNumberish
 ) {
+  const irrevocableVestingImplementationAddress = ethers.getCreateAddress({
+    from: irrevocableVestingFactoryAddress as string,
+    nonce: 1,
+  });
   return ethers.getCreate2Address(
     irrevocableVestingFactoryAddress as string,
     ethers.solidityPackedKeccak256(

@@ -34,6 +34,9 @@ describe('IrrevocableVestingFactory', function () {
         expect(await irrevocableVestingFactory.api3Token()).to.equal(await mockApi3Token.getAddress());
         const irrevocableVestingImplementationAddress =
           await irrevocableVestingFactory.irrevocableVestingImplementation();
+        expect(irrevocableVestingImplementationAddress).to.equal(
+          ethers.getCreateAddress({ from: await irrevocableVestingFactory.getAddress(), nonce: 1 })
+        );
         const irrevocableVestingContractFactory = await ethers.getContractFactory('IrrevocableVesting', roles.deployer);
         const eoaDeployedIrrevocableVesting = await irrevocableVestingContractFactory.deploy(
           mockApi3Token.getAddress()
@@ -90,7 +93,6 @@ describe('IrrevocableVestingFactory', function () {
                         await helpers.loadFixture(deployIrrevocableVestingFactory);
                       const calculatedIrrevocableVestingAddress = deriveIrrevocableVestingAddress(
                         await irrevocableVestingFactory.getAddress(),
-                        await irrevocableVestingFactory.irrevocableVestingImplementation(),
                         roles.beneficiary!.address,
                         vestingParameters.startTimestamp,
                         vestingParameters.endTimestamp,
@@ -344,7 +346,6 @@ describe('IrrevocableVestingFactory', function () {
       ).to.equal(
         deriveIrrevocableVestingAddress(
           await irrevocableVestingFactory.getAddress(),
-          await irrevocableVestingFactory.irrevocableVestingImplementation(),
           roles.beneficiary!.address,
           vestingParameters.startTimestamp,
           vestingParameters.endTimestamp,

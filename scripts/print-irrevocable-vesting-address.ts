@@ -4,7 +4,6 @@ import { deriveIrrevocableVestingAddress } from '../src';
 
 async function main() {
   const deployment = await deployments.get('IrrevocableVestingFactory');
-  const irrevocableVestingImplementationAddress = ethers.getCreateAddress({ from: deployment.address, nonce: 0 });
   if (!process.env.BENEFICIARY) {
     throw new Error('Environment variable BENEFICIARY is not defined');
   }
@@ -21,7 +20,6 @@ async function main() {
   console.log(
     deriveIrrevocableVestingAddress(
       deployment.address,
-      irrevocableVestingImplementationAddress,
       process.env.BENEFICIARY,
       process.env.START_TIMESTAMP,
       process.env.END_TIMESTAMP,
