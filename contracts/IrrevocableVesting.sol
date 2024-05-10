@@ -43,10 +43,10 @@ contract IrrevocableVesting is IIrrevocableVesting {
     /// @dev This contract is means to be an implementation for
     /// IrrevocableVestingFactory to clone. To prevent the implementation from
     /// being used, the contract is rendered uninitializable.
-    /// @param _api3Token Api3Token address
-    constructor(address _api3Token) {
-        require(_api3Token != address(0), "Api3Token address zero");
-        api3Token = _api3Token;
+    /// @param api3Token_ Api3Token address
+    constructor(address api3Token_) {
+        require(api3Token_ != address(0), "Api3Token address zero");
+        api3Token = api3Token_;
         beneficiary = 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF;
     }
 

@@ -15,12 +15,12 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
     /// @notice IrrevocableVesting implementation address
     address public immutable override irrevocableVestingImplementation;
 
-    /// @param _api3Token Api3Token address
-    constructor(address _api3Token) {
-        require(_api3Token != address(0), "Api3Token address zero");
-        api3Token = _api3Token;
+    /// @param api3Token_ Api3Token address
+    constructor(address api3Token_) {
+        require(api3Token_ != address(0), "Api3Token address zero");
+        api3Token = api3Token_;
         irrevocableVestingImplementation = address(
-            new IrrevocableVesting(_api3Token)
+            new IrrevocableVesting(api3Token_)
         );
     }
 
