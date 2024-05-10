@@ -1,6 +1,8 @@
 import * as ethers from 'ethers';
 import type { AddressLike, BigNumberish } from 'ethers';
 
+export * from '../typechain-types';
+
 export const api3TokenAddress = '0x0b38210ea11411557c13457D4dA7dC6ea731B88a';
 
 export function deriveIrrevocableVestingAddress(
