@@ -1,4 +1,4 @@
-import { deployments, ethers } from 'hardhat';
+import { deployments } from 'hardhat';
 
 import { deriveIrrevocableVestingAddress } from '../src';
 
