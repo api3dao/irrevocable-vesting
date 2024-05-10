@@ -6,8 +6,8 @@ import "./IrrevocableVesting.sol";
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-/// @title Contract that deploys a IrrevocableVesting implementation and allows
-/// it to be cloned to create vestings
+/// @title Contract that deploys an IrrevocableVesting implementation and
+/// allows it to be cloned to create vestings
 contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
     /// @notice Api3Token address
     address public immutable override api3Token;
@@ -27,7 +27,7 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
     /// @notice Deploys an IrrevocableVesting clone and transfers the vesting
     /// amount to it from the sender
     /// @dev The sender needs to approve `amount` API3 tokens to this contract
-    /// before calling this.
+    /// before calling this function
     /// @param beneficiary Beneficiary of the vesting
     /// @param startTimestamp Starting timestamp of the vesting
     /// @param endTimestamp Ending timestamp of the vesting
@@ -65,8 +65,8 @@ contract IrrevocableVestingFactory is IIrrevocableVestingFactory {
         );
     }
 
-    /// @notice Predicts the address of the IrrevocableVesting clone deployed
-    /// by this contract
+    /// @notice Predicts the address of the IrrevocableVesting clone that would
+    /// be deployed by this contract
     /// @param beneficiary Beneficiary of the vesting
     /// @param startTimestamp Starting timestamp of the vesting
     /// @param endTimestamp Ending timestamp of the vesting

@@ -90,8 +90,8 @@ contract IrrevocableVesting is IIrrevocableVesting {
         });
     }
 
-    /// @notice Called by the beneficiary as many tokens the vesting schedule
-    /// allows
+    /// @notice Called by the beneficiary to withdraw as many tokens the
+    /// vesting schedule allows
     function withdrawAsBeneficiary() external override onlyBeneficiary {
         uint256 balance = IERC20(api3Token).balanceOf(address(this));
         require(balance != 0, "Balance zero");
