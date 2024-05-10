@@ -172,9 +172,9 @@ describe('IrrevocableVesting', function () {
     context('Sender is not beneficiary', function () {
       it('reverts', async function () {
         const { roles, irrevocableVesting } = await helpers.loadFixture(factoryDeployIrrevocableVesting);
-        await expect(irrevocableVesting.connect(roles.randomPerson).withdrawAsBeneficiary()).to.be.revertedWith(
-          'Sender not beneficiary'
-        );
+        await expect(
+          (irrevocableVesting as any).connect(roles.randomPerson!).withdrawAsBeneficiary()
+        ).to.be.revertedWith('Sender not beneficiary');
       });
     });
   });
