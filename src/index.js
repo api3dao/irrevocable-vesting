@@ -1,6 +1,7 @@
 const ethers = require('ethers');
 
 module.exports = {
+  api3TokenAddress: '0x0b38210ea11411557c13457D4dA7dC6ea731B88a',
   deriveIrrevocableVestingAddress: (
     irrevocableVestingFactoryAddress,
     irrevocableVestingImplementationAddress,
