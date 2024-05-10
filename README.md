@@ -18,11 +18,11 @@ pnpm test:coverage
 To derive the expected address of an IrrevocableVesting deployment
 
 ```sh
-BENEFICIARY=... \
-  START_TIMESTAMP=...\
-  END_TIMESTAMP=...\
-  AMOUNT=...\
-  pnpm derive-vesting-address
+BENEFICIARY=0x07b589f06bD0A5324c4E2376d66d2F4F25921DE1 \
+  START_TIMESTAMP=1 \
+  END_TIMESTAMP=2 \
+  AMOUNT=1 \
+  pnpm print-irrevocable-vesting-address
 ```
 
 See the [`beneficiary` guide](./beneficiary-guide.md) for instructions
