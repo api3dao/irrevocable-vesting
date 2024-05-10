@@ -56,37 +56,37 @@ contract IrrevocableVesting is IIrrevocableVesting {
     /// Anyone can initialize a IrrevocableVesting clone. The user is required
     /// to prevent others from initializing their clones, for example, by
     /// initializing the clone in the same transaction as it is deployed in.
-    /// The IrrevocableVesting needs to have exactly `_amount` API3 tokens.
+    /// The IrrevocableVesting needs to have exactly `amount` API3 tokens.
     /// @param beneficiary_ Beneficiary of the vesting
-    /// @param _startTimestamp Starting timestamp of the vesting
-    /// @param _endTimestamp Ending timestamp of the vesting
-    /// @param _amount Amount of tokens to be vested over the period
+    /// @param startTimestamp Starting timestamp of the vesting
+    /// @param endTimestamp Ending timestamp of the vesting
+    /// @param amount Amount of tokens to be vested over the period
     function initialize(
         address beneficiary_,
-        uint32 _startTimestamp,
-        uint32 _endTimestamp,
-        uint192 _amount
+        uint32 startTimestamp,
+        uint32 endTimestamp,
+        uint192 amount
     ) external override {
         require(beneficiary == address(0), "Already initialized");
         require(beneficiary_ != address(0), "Beneficiary address zero");
-        require(_startTimestamp != 0, "Start timestamp zero");
-        require(_endTimestamp > _startTimestamp, "End not later than start");
+        require(startTimestamp != 0, "Start timestamp zero");
+        require(endTimestamp > startTimestamp, "End not later than start");
         require(
-            _endTimestamp <=
+            endTimestamp <=
                 block.timestamp +
                     MAXIMUM_TIME_BETWEEN_INITIALIZATION_AND_VESTING_END,
             "End is too far in the future"
         );
-        require(_amount != 0, "Amount zero");
+        require(amount != 0, "Amount zero");
         require(
-            IERC20(api3Token).balanceOf(address(this)) == _amount,
+            IERC20(api3Token).balanceOf(address(this)) == amount,
             "Balance is not vesting amount"
         );
         beneficiary = beneficiary_;
         vesting = Vesting({
-            startTimestamp: _startTimestamp,
-            endTimestamp: _endTimestamp,
-            amount: _amount
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            amount: amount
         });
     }
 
