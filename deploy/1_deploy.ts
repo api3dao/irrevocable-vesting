@@ -22,12 +22,6 @@ module.exports = async () => {
     }
   );
 
-  const irrevocableVestingFactory = new ethers.Contract(
-    irrevocableVestingFactoryAddress,
-    irrevocableVestingFactoryAbi,
-    deployer
-  ) as unknown as IrrevocableVestingFactory;
-
   const exampleVesting = {
     startTimestamp: 1,
     endTimestamp: 2,
@@ -49,6 +43,11 @@ module.exports = async () => {
       log('Approving 1 (Wei) API3 to IrrevocableVestingFactory');
       await api3Token.approve(irrevocableVestingFactoryAddress, exampleVesting.amount);
     }
+    const irrevocableVestingFactory = new ethers.Contract(
+      irrevocableVestingFactoryAddress,
+      irrevocableVestingFactoryAbi,
+      deployer
+    ) as unknown as IrrevocableVestingFactory;
     await irrevocableVestingFactory.deployIrrevocableVesting(
       deployer!.address,
       exampleVesting.startTimestamp,
