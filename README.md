@@ -4,7 +4,7 @@ Install the dependencies and build
 
 ```sh
 pnpm i
-yarn build
+pnpm build
 ```
 
 Test the contracts and get test coverage
@@ -24,5 +24,6 @@ BENEFICIARY=0x07b589f06bD0A5324c4E2376d66d2F4F25921DE1 \
   AMOUNT=1 \
   pnpm print-irrevocable-vesting-address
 ```
+_It is required that you also have a MNEMONIC environment variable set before runnning this script_
 
 See the [`beneficiary` guide](./beneficiary-guide.md) for instructions

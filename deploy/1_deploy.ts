@@ -40,7 +40,7 @@ module.exports = async () => {
     log(`Deploying example IrrevocableVesting at ${exampleIrrevocableVestingAddress}`);
     const api3Token = new ethers.Contract(api3TokenAddress, ERC20__factory.abi, deployer) as unknown as ERC20;
     if ((await api3Token.allowance(deployer!.address, irrevocableVestingFactoryAddress)) < exampleVesting.amount) {
-      log('Approving 1 (Wei) API3 to IrrevocableVestingFactory');
+      log(`Approving ${exampleVesting.amount} (Wei) API3 to IrrevocableVestingFactory`);
       await api3Token.approve(irrevocableVestingFactoryAddress, exampleVesting.amount);
     }
     const irrevocableVestingFactory = new ethers.Contract(
