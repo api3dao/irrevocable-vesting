@@ -83,11 +83,7 @@ contract IrrevocableVesting is IIrrevocableVesting {
             "Balance is not vesting amount"
         );
         beneficiary = beneficiary_;
-        vesting = Vesting({
-            startTimestamp: startTimestamp,
-            endTimestamp: endTimestamp,
-            amount: amount
-        });
+        vesting = Vesting(startTimestamp, endTimestamp, amount);
     }
 
     /// @notice Called by the beneficiary to withdraw as many tokens the
