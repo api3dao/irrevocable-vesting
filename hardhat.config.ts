@@ -4,6 +4,8 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-deploy';
 import 'dotenv/config';
 
+process.env.MNEMONIC = process.env.MNEMONIC ?? 'test test test test test test test test test test test junk';
+
 const config: HardhatUserConfig = {
   etherscan: hardhatConfig.etherscan(),
   networks: hardhatConfig.networks(),
