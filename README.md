@@ -4,7 +4,7 @@ Install the dependencies and build
 
 ```sh
 pnpm i
-yarn build
+pnpm build
 ```
 
 Test the contracts and get test coverage
